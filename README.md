@@ -24,6 +24,28 @@ You probably can find them on the internet, or just use another SysEx file.
 
 - A simple [video](https://www.youtube.com/watch?v=Tj9uJ8i0ocg) on SysEx.
 - A very nice [article](http://www.muzines.co.uk/articles/everything-you-ever-wanted-to-know-about-system-exclusive/4558) os SysEx.
+- [Midi SysEx](https://en.wikipedia.org/wiki/MIDI_Machine_Control) on wiki
 - [SysEx Librarian](https://www.snoize.com/SysExLibrarian/) [source](https://github.com/krevis/MIDIApps) for sending and receiving SysEx
 - Autechre on [youtube](https://www.youtube.com/watch?v=UiFWYtgRBHk)
 - Autechre on [Elektronauts](https://www.elektronauts.com/t/autechre-md-mnm-sysex-files-mpc-nord/67208)
+
+https://electronicmusic.fandom.com/wiki/System_exclusive
+https://electronicmusic.fandom.com/wiki/List_of_MIDI_Manufacturer_IDs
+
+## Analysis of Elektron MonoMachine and MachineDrum SysEx dumps
+
+It appears that a SysEx dump itself is not wrapped with SysEx message start and end bytes but that a full dump contains
+a number of messages that all have the following format:
+
+```
+- F0 byte
+- header 5 bytes (synth specific)
+- message type 1 byte
+- data
+- F7 byte
+```
+
+Notes:
+- Not sure if the header is always 5 bytes long. Maybe older SysEx files (when the synth manufacturer code was just one
+ byte long) have a shorter header
+- The message types for MonoMachine and MachineDrum are identical. The content most probably not.

@@ -39,13 +39,13 @@ a number of messages that all have the following format:
 
 ```
 - F0 byte
-- header 5 bytes (synth specific)
+- header 3 or 5 bytes 
 - message type 1 byte
 - data
 - F7 byte
 ```
 
 Notes:
-- Not sure if the header is always 5 bytes long. Maybe older SysEx files (when the synth manufacturer code was just one
- byte long) have a shorter header
+- Depending on the manufacturer the header is 3 or 5 bytes long. If the 1st byte is 0 then 2 more bytes will follow to 
+identify the manufacturer.
 - The message types for MonoMachine and MachineDrum are identical. The content most probably not.

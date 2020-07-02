@@ -7,26 +7,16 @@ import (
 )
 
 func main() {
-	sysExFile := flag.String("sysex", "mm010308.syx", "The SysEx file to read")
-	sysExType := flag.String("type", "machinedrum", "The SysEx file type")
+	fileName := flag.String("sysex", "mm010308.syx", "The SysEx file to read")
 
-	sysExData := sysex.ReadSysExFileAndDumpBytesToConsole(sysExFile)
+	sysExData := sysex.ReadSysExFile(fileName)
 
-	//TODO refactor this implementation
-	if *sysExType == "machinedrum" {
-		sysex.ValidateMachineDrumSysEx(sysExData)
-	}
+	//For debugging dump part of the file to console
+	sysExData.DumpSysExBytesToConsole(0, 1300)
 
-	if *sysExType == "monomachine" {
-		sysex.ValidateMonoMachineSysEx(sysExData)
-	}
+	// Get some stats on the file
+	messages := sysExData.GetAllMessages()
 
-	messages := sysex.GetAllMessages(sysExData)
-
-	for _, message := range messages {
-		fmt.Printf("%x\n", message.Message)
-
-	}
-
+	fmt.Printf("Read %d messages \n", len(messages))
 	fmt.Println("Processing finished")
 }

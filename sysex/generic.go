@@ -1,6 +1,7 @@
 package sysex
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
@@ -12,10 +13,45 @@ const (
 	SysExEnd   byte = 0xF7
 )
 
+type SysExModel struct {
+	model []byte
+	name  string
+}
+
+var sysExModels = []SysExModel{
+	{[]byte{0x00, 0x20, 0x3c, 0x02, 0x00}, "Elektron MachineDrum"},
+	{[]byte{0x00, 0x20, 0x3c, 0x03, 0x00}, "Elektron MonoMachine"},
+}
+
+type SysExData struct {
+	bytes []byte
+}
+
 type SysExMessage struct {
-	Header  []byte
-	Message byte
-	Data    []byte
+	bytes []byte
+}
+
+func (messsage SysExMessage) IsValid() bool {
+	return messsage.bytes[0] == SysExStart && messsage.bytes[len(messsage.bytes)-1] == SysExEnd
+}
+
+func (messsage SysExMessage) Type() byte {
+	sysExModel := messsage.Model()
+	if sysExModel != nil {
+		return messsage.bytes[1+len(sysExModel.model)]
+	} else {
+		// TODO error?!?!?
+		return 0
+	}
+}
+
+func (messsage SysExMessage) Model() *SysExModel {
+	for _, model := range sysExModels {
+		if bytes.HasPrefix(messsage.bytes[1:], model.model) {
+			return &model
+		}
+	}
+	return nil
 }
 
 func check(e error) {
@@ -24,7 +60,7 @@ func check(e error) {
 	}
 }
 
-func ReadSysExFileAndDumpBytesToConsole(sysExFile *string) []byte {
+func ReadSysExFile(sysExFile *string) SysExData {
 	fmt.Println("Reading ", *sysExFile)
 
 	sysExData, err := ioutil.ReadFile(*sysExFile)
@@ -32,36 +68,28 @@ func ReadSysExFileAndDumpBytesToConsole(sysExFile *string) []byte {
 
 	fmt.Printf("Read %d bytes \n", len(sysExData))
 
-	//fmt.Printf("%T\n", sysex)
+	return SysExData{sysExData}
+}
 
+func (data SysExData) DumpSysExBytesToConsole(start, length int) {
 	//Hex dump
 	stdoutDumper := hex.Dumper(os.Stdout)
 	defer stdoutDumper.Close()
 
-	stdoutDumper.Write(sysExData[:1300])
-
-	return sysExData
+	stdoutDumper.Write(data.bytes[start : start+length])
 }
 
-func GetAllMessages(sysExData []byte) []SysExMessage {
+func (data SysExData) GetAllMessages() []SysExMessage {
 	messages := make([]SysExMessage, 0)
 
-	//Start reading messages.
-	//Format is:
-	// - F0 byte
-	// - header 5 bytes
-	// - message type 1 byte
-	// - data
-	// - F7 byte
-	//TODO Elektron's MonoMachine and MachineDrum headers are indeed 5 bytes long. Others might not.
-	headerLength := 5
 	messageStart := 0
+	sysExData := data.bytes
 	for i := 0; i < len(sysExData)-1; i++ {
 		if sysExData[i] == SysExEnd {
 			// Create message
-			message := SysExMessage{sysExData[messageStart+1 : messageStart+1+headerLength],
-				sysExData[messageStart+1+headerLength],
-				sysExData[messageStart+1+headerLength : i-1]}
+			message := SysExMessage{sysExData[messageStart : i+1]}
+
+			fmt.Printf("%s message %x valid %t \n", message.Model().name, message.Type(), message.IsValid())
 
 			messages = append(messages, message)
 			// Point to next message

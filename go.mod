@@ -1,3 +1,3 @@
 module github.com/rmoetwil/elektron-sysex-processor
 
-go 1.14
+go 1.15

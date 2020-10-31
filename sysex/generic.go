@@ -31,23 +31,23 @@ type SysExMessage struct {
 	bytes []byte
 }
 
-func (messsage SysExMessage) IsValid() bool {
-	return messsage.bytes[0] == SysExStart && messsage.bytes[len(messsage.bytes)-1] == SysExEnd
+func (message SysExMessage) IsValid() bool {
+	return message.bytes[0] == SysExStart && message.bytes[len(message.bytes)-1] == SysExEnd
 }
 
-func (messsage SysExMessage) Type() byte {
-	sysExModel := messsage.Model()
+func (message SysExMessage) Type() byte {
+	sysExModel := message.Model()
 	if sysExModel != nil {
-		return messsage.bytes[1+len(sysExModel.model)]
+		return message.bytes[1+len(sysExModel.model)]
 	} else {
 		// TODO error?!?!?
 		return 0
 	}
 }
 
-func (messsage SysExMessage) Model() *SysExModel {
+func (message SysExMessage) Model() *SysExModel {
 	for _, model := range sysExModels {
-		if bytes.HasPrefix(messsage.bytes[1:], model.model) {
+		if bytes.HasPrefix(message.bytes[1:], model.model) {
 			return &model
 		}
 	}
@@ -92,9 +92,9 @@ func (data SysExData) GetAllMessages() []SysExMessage {
 			fmt.Printf("%s message %x valid %t \n", message.Model().name, message.Type(), message.IsValid())
 
 			messages = append(messages, message)
+
 			// Point to next message
 			messageStart = i + 1
-
 			if sysExData[messageStart] != SysExStart {
 				//TODO Do something here as this is a signal the parsing is off.
 				fmt.Println("Not at message start")

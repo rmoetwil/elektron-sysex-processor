@@ -16,3 +16,6 @@
 
 #Exclude SysEx test files
 *.syx
+
+# Exclude binary
+elektron-sysex-processor

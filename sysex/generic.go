@@ -13,14 +13,19 @@ const (
 	SysExEnd   byte = 0xF7
 )
 
+type sysExMessageHandler interface {
+	modelName() string
+	parseMessage(SysExMessage)
+}
+
 type SysExModel struct {
-	model []byte
-	name  string
+	model   []byte
+	handler sysExMessageHandler
 }
 
 var sysExModels = []SysExModel{
-	{[]byte{0x00, 0x20, 0x3c, 0x02, 0x00}, "Elektron MachineDrum"},
-	{[]byte{0x00, 0x20, 0x3c, 0x03, 0x00}, "Elektron MonoMachine"},
+	{getMachineDrumId(), &machinedrumHandler{}},
+	{getMonoMachineId(), &monomachineHandler{}},
 }
 
 type SysExData struct {
@@ -35,6 +40,7 @@ func (message SysExMessage) IsValid() bool {
 	return message.bytes[0] == SysExStart && message.bytes[len(message.bytes)-1] == SysExEnd
 }
 
+// TODO Move this to the specific handler
 func (message SysExMessage) Type() byte {
 	sysExModel := message.Model()
 	if sysExModel != nil {
@@ -89,8 +95,10 @@ func (data SysExData) GetAllMessages() []SysExMessage {
 			// Create message
 			message := SysExMessage{sysExData[messageStart : i+1]}
 
-			fmt.Printf("%s message %x valid %t \n", message.Model().name, message.Type(), message.IsValid())
+			sysExModel := message.Model()
+			fmt.Printf("%s message %x valid %t \n", sysExModel.handler.modelName(), message.Type(), message.IsValid())
 
+			sysExModel.handler.parseMessage(message)
 			messages = append(messages, message)
 
 			// Point to next message

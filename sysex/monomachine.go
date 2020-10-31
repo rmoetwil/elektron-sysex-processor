@@ -15,6 +15,6 @@ func ValidateMonoMachineSysEx(sysExData []byte) bool {
 		return true
 	} else {
 		fmt.Println("Invalid MonoMachine SysEx")
-		return true
+		return false
 	}
 }

@@ -15,6 +15,6 @@ func ValidateMachineDrumSysEx(sysExData []byte) bool {
 		return true
 	} else {
 		fmt.Println("Invalid MachineDrum SysEx")
-		return true
+		return false
 	}
 }

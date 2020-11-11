@@ -18,4 +18,4 @@
 *.syx
 
 # Exclude binary
-elektron-sysex-processor
+sysex-processor

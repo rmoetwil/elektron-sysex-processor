@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rmoetwil/elektron-sysex-processor/sysex"
+	"github.com/rmoetwil/elektron-sysex-processor/internal/sysex"
 )
 
 func main() {

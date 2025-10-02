@@ -66,10 +66,10 @@ func check(e error) {
 	}
 }
 
-func ReadSysExFile(sysExFile *string) SysExData {
-	fmt.Println("Reading ", *sysExFile)
+func ReadSysExFile(sysExFile string) SysExData {
+	fmt.Println("Reading ", sysExFile)
 
-	sysExData, err := ioutil.ReadFile(*sysExFile)
+	sysExData, err := ioutil.ReadFile(sysExFile)
 	check(err)
 
 	fmt.Printf("Read %d bytes \n", len(sysExData))

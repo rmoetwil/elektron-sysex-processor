@@ -14,7 +14,6 @@ In between you can find the manufacturers identification and the actual data.
 The idea is that I would be able to read and write files in SysEx format for various devices I own. E.g.
 - Elektron MachineDrum
 - Elektron MonoMachine
-- Akai S3000XL
 
 For testing purposes I use the SysEx files of the Autechre 2008 Quaristice tour.
 I haven't includes there in the repo.

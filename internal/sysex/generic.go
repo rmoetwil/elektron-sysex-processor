@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -69,7 +68,7 @@ func check(e error) {
 func ReadSysExFile(sysExFile string) SysExData {
 	fmt.Println("Reading ", sysExFile)
 
-	sysExData, err := ioutil.ReadFile(sysExFile)
+	sysExData, err := os.ReadFile(sysExFile)
 	check(err)
 
 	fmt.Printf("Read %d bytes \n", len(sysExData))
@@ -109,6 +108,8 @@ func (data SysExData) GetAllMessages() []SysExMessage {
 			}
 		}
 	}
+
+	fmt.Printf("Read %d messages \n", len(messages))
 
 	return messages
 }
